@@ -26,6 +26,7 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"syscall"
 )
 
 type Task func()
@@ -44,7 +45,7 @@ func Add(t Task) {
 
 func OnSignal() {
 	var c = make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
+	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGTERM)
 	<-c
 	Now(0)
 }
