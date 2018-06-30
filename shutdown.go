@@ -35,6 +35,10 @@ var (
 	once  sync.Once
 	mu    sync.Mutex
 	tasks []Task
+	exit  = os.Exit
+	block = func() {
+		select{}
+	}
 )
 
 func Add(t Task) {
@@ -57,10 +61,10 @@ func Now(code int) {
 		for i := len(tasks) - 1; i >= 0; i-- {
 			tasks[i]()
 		}
-		os.Exit(code)
+		exit(code)
 	})
 	// if multiple goroutines try to shutdown concurrently, block the ones that
 	// did not make it into the once.Do call since they are expected a call to
 	// Now to exit the app (i.e. never return)
-	select{}
+	block()
 }
