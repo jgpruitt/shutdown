@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func Test(t *testing.T) {
+func TestNow(t *testing.T) {
 	var str = ""
 
 	exit = func(code int) {
@@ -31,9 +31,16 @@ func Test(t *testing.T) {
 	}()
 
 	Now(0)
-	Now(6) // this one shouldn't do anything
+	t.Run("the first shutdown", func(t *testing.T) {
+		if str != "cbaexit0" {
+			t.Errorf("expected 'cbaexit0' but got '%s'", str)
+		}
+	})
 
-	if str != "cbaexit0" {
-		t.Errorf("expected 'cbaexit0' but got '%s'", str)
-	}
+	Now(6) // this one shouldn't do anything
+	t.Run("the second shutdown", func(t *testing.T) {
+		if str != "cbaexit0" {
+			t.Errorf("expected 'cbaexit0' but got '%s'", str)
+		}
+	})
 }

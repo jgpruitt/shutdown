@@ -57,7 +57,7 @@ func OnSignal() {
 func Now(code int) {
 	once.Do(func() {
 		mu.Lock()
-		defer mu.Unlock()
+		defer mu.Unlock() // not that it should matter
 		for i := len(tasks) - 1; i >= 0; i-- {
 			tasks[i]()
 		}
