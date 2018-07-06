@@ -20,49 +20,35 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-package shutdown
+package shutdown_test
 
 import (
-	"testing"
+	"github.com/jgpruitt/shutdown"
 	"fmt"
 )
 
-func TestNow(t *testing.T) {
-	var str = ""
+func ExampleOnSignal() {
 
-	exit = func(code int) {
-		// don't actually exit the process for the purposes of testing
-		str = fmt.Sprintf("%sexit%d", str, code)
-	}
-	block = func() {
-		// don't actually block forever for the purposes of testing
-	}
-
-	Add(func() {
-		str = str + "a"
-	})
-	Add(func() {
-		str = str + "b"
-	})
-	Add(func() {
-		str = str + "c"
+	// register a task to be executed on shutdown
+	shutdown.Add(func() {
+		// in reality, maybe close a logging subsystem
+		fmt.Println("I will be executed last.")
 	})
 
-	go func() {
-		OnSignal()
-	}()
-
-	Now(0)
-	t.Run("the first shutdown", func(t *testing.T) {
-		if str != "cbaexit0" {
-			t.Errorf("expected 'cbaexit0' but got '%s'", str)
-		}
+	// register another task to be executed on shutdown
+	shutdown.Add(func() {
+		// in reality, maybe close database connections
+		fmt.Println("I get executed second.")
 	})
 
-	Now(6) // this one shouldn't do anything
-	t.Run("the second shutdown", func(t *testing.T) {
-		if str != "cbaexit0" {
-			t.Errorf("expected 'cbaexit0' but got '%s'", str)
-		}
+	// register a third task to be executed on shutdown
+	shutdown.Add(func() {
+		// in reality, maybe gracefully close an http.Server
+		fmt.Println("I get executed first.")
 	})
+
+	// this blocks until a SIGINT, SIGHUP, or SIGTERM is received
+	// then it runs the shutdown tasks in FILO order
+	// then it exits the process
+	shutdown.OnSignal()
 }
