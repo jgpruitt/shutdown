@@ -27,8 +27,27 @@ import (
 	"fmt"
 )
 
-func ExampleOnSignal() {
+func ExampleAdd() {
+	// register a task to be executed on shutdown
+	shutdown.Add(func() {
+		// in reality, maybe close a logging subsystem
+		fmt.Println("I will be executed last.")
+	})
 
+	// register another task to be executed on shutdown
+	shutdown.Add(func() {
+		// in reality, maybe close database connections
+		fmt.Println("I get executed second.")
+	})
+
+	// register a third task to be executed on shutdown
+	shutdown.Add(func() {
+		// in reality, maybe gracefully close an http.Server
+		fmt.Println("I get executed first.")
+	})
+}
+
+func ExampleOnSignal() {
 	// register a task to be executed on shutdown
 	shutdown.Add(func() {
 		// in reality, maybe close a logging subsystem
@@ -51,4 +70,28 @@ func ExampleOnSignal() {
 	// then it runs the shutdown tasks in FILO order
 	// then it exits the process
 	shutdown.OnSignal()
+}
+
+func ExampleNow() {
+	// register a task to be executed on shutdown
+	shutdown.Add(func() {
+		// in reality, maybe close a logging subsystem
+		fmt.Println("I will be executed last.")
+	})
+
+	// register another task to be executed on shutdown
+	shutdown.Add(func() {
+		// in reality, maybe close database connections
+		fmt.Println("I get executed second.")
+	})
+
+	// register a third task to be executed on shutdown
+	shutdown.Add(func() {
+		// in reality, maybe gracefully close an http.Server
+		fmt.Println("I get executed first.")
+	})
+
+	// this runs the shutdown tasks in FILO order
+	// then it exits the process with exit code = 99
+	shutdown.Now(99)
 }

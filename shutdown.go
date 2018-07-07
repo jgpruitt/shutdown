@@ -29,6 +29,7 @@ import (
 	"syscall"
 )
 
+// A Task is a function that needs to be run before the process exits.
 type Task func()
 
 var (
@@ -41,12 +42,16 @@ var (
 	}
 )
 
+// Add registers a Task to be executed just before the process exits.
 func Add(t Task) {
 	mu.Lock()
 	defer mu.Unlock()
 	tasks = append(tasks, t)
 }
 
+// OnSignal blocks until SIGINT, SIGHUP, or SIGTERM is received.
+// Then, it runs all shutdown Tasks in FILO order.
+// Finally, it exits the process with exit code = 0.
 func OnSignal() {
 	var c = make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGTERM)
@@ -54,6 +59,9 @@ func OnSignal() {
 	Now(0)
 }
 
+// Now initiates the shutdown process immediately.
+// Then, it runs all shutdown Tasks in FILO order.
+// Finally, it exits the process with exit code = "code".
 func Now(code int) {
 	once.Do(func() {
 		mu.Lock()
