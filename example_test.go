@@ -23,8 +23,8 @@
 package shutdown_test
 
 import (
-	"github.com/jgpruitt/shutdown"
 	"fmt"
+	"github.com/jgpruitt/shutdown"
 )
 
 func ExampleAdd() {

@@ -23,8 +23,8 @@
 package shutdown
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestNow(t *testing.T) {

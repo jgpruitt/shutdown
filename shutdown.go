@@ -38,7 +38,7 @@ var (
 	tasks []Task
 	exit  = os.Exit
 	block = func() {
-		select{}
+		select {} // blocks forever
 	}
 )
 
